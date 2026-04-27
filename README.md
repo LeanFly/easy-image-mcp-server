@@ -64,7 +64,7 @@ docker build -t easy-image-mcp-server .
 
 ### 运行容器
 
-启动容器并暴露 MCP 通信端口（假设使用 stdio 或 SSE，根据实际实现调整）：
+启动容器并暴露 MCP 通信端口（根据实际实现调整）：
 
 ```bash
 docker run -d --name easy-image-mcp \
@@ -72,7 +72,17 @@ docker run -d --name easy-image-mcp \
   easy-image-mcp-server
 ```
 
-> **注意**: 如果 MCP Server 使用 stdio 模式（如 Claude Desktop 集成），Docker 部署可能需要特殊配置以支持 stdin/stdout 交互。建议查阅具体 MCP Client 的 Docker 集成文档。
+```
+"easyimage": {
+   "url": "http://ip:port/mcp",
+   "transport": "streamable-http",
+   "headers": {
+          "X-Easy-Image-Token": "",
+          "X-Easy-Image-Api-Url": ""
+   }
+}
+```
+
 
 ## 安装与运行 (本地)
 
@@ -85,6 +95,19 @@ docker run -d --name easy-image-mcp \
    ```bash
    python easy_image_mcp_server.py
    ```
+```
+"easy-image": {
+   "command": "python",
+   "args": [
+        "/path/to/easy_image_mcp_server.py"
+      ],
+   "headers": {
+          "X-Easy-Image-Token": "",
+          "X-Easy-Image-Api-Url": ""
+      }
+}
+```
+
 
 ## 使用示例
 
