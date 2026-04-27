@@ -37,6 +37,55 @@
 - **预配置**: Token 和 API URL 已在服务器内部通过 Headers 预配置。
 - **覆盖**: 在调用 `upload_image` 时，可以通过传入 `token` 或 `api_url` 参数来临时覆盖默认配置。
 
+## Docker 部署
+
+### 构建镜像
+
+在项目根目录下创建 `Dockerfile`（示例如下）：
+
+```dockerfile src/Dockerfile
+FROM python:3.10-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY easy_image_mcp_server.py .
+
+CMD ["python", "easy_image_mcp_server.py"]
+```
+
+构建镜像：
+
+```bash
+docker build -t easy-image-mcp-server .
+```
+
+### 运行容器
+
+启动容器并暴露 MCP 通信端口（假设使用 stdio 或 SSE，根据实际实现调整）：
+
+```bash
+docker run -d --name easy-image-mcp \
+  -p 8080:8080 \
+  easy-image-mcp-server
+```
+
+> **注意**: 如果 MCP Server 使用 stdio 模式（如 Claude Desktop 集成），Docker 部署可能需要特殊配置以支持 stdin/stdout 交互。建议查阅具体 MCP Client 的 Docker 集成文档。
+
+## 安装与运行 (本地)
+
+1. 确保已安装 Python 3.8+。
+2. 安装依赖（如有）：
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. 启动 MCP Server：
+   ```bash
+   python easy_image_mcp_server.py
+   ```
+
 ## 使用示例
 
 ### 上传本地图片
@@ -70,19 +119,8 @@
 }
 ```
 
-## 安装与运行
-
-1. 确保已安装 Python 3.8+。
-2. 安装依赖（如有）：
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. 启动 MCP Server：
-   ```bash
-   python easy_image_mcp_server.py
-   ```
-
 ## 注意事项
 
 - 请确保 Easy Image 图床服务的 Token 和 API URL 已正确配置在服务器代码中。
 - 上传网络图片时，程序会自动下载图片并上传，请确保网络连接正常。
+- Docker 部署时，请根据实际 MCP 通信协议（stdio/sse）调整容器运行方式。
